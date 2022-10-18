@@ -68,6 +68,7 @@ function SongCard(props) {
         sourceId++
 
         targetId++
+        
 
         console.log(sourceId)
 
