@@ -12,11 +12,21 @@ function SongCard(props) {
         store.deleteMarkedSong(index);
     }
 
+    function handleClick(event){
+
+        if (event.detail == 2){
+
+            store.editMarkedSong(index)
+        }
+
+    }
+
     return (
         <div
             key={index}
             id={'song-' + index + '-card'}
             className={cardClass}
+            onClick={handleClick}
         >
             {index + 1}.
             <a

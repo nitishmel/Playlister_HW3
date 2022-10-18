@@ -19,7 +19,8 @@ export const GlobalStoreActionType = {
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION",
-    MARK_SONG_FOR_DELETION: "MARK_SONG_FOR_DELETION"
+    MARK_SONG_FOR_DELETION: "MARK_SONG_FOR_DELETION",
+    MARK_SONG_FOR_EDITING: "MARK_SONG_FOR_EDITING"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -35,7 +36,8 @@ export const useGlobalStore = () => {
         newListCounter: 0,
         listNameActive: false,
         markedkeyfordeletion: null,
-        markedsongfordeletion: null
+        markedsongfordeletion: null,
+        markedsongforediting: null
     });
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
@@ -129,6 +131,17 @@ export const useGlobalStore = () => {
                     listNameActive: true,
                     markedkeyfordeletion: store.markedkeyfordeletion,
                     markedsongfordeletion: store.markedsongfordeletion
+                });
+            }
+            case GlobalStoreActionType.MARK_SONG_FOR_EDITING: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    listNameActive: true,
+                    markedkeyfordeletion: store.markedkeyfordeletion,
+                    markedsongfordeletion: store.markedsongfordeletion,
+                    markedsongforediting: payload
                 });
             }
             default:
@@ -277,6 +290,17 @@ export const useGlobalStore = () => {
 
     }
 
+    store.editMarkedSong = function(index){
+
+        storeReducer({
+            
+            type: GlobalStoreActionType.MARK_SONG_FOR_EDITING,
+            payload: index
+        })
+        
+        store.showEditSongModal()
+    }
+
     store.delete = async function() {
 
         let list = store.currentList
@@ -302,6 +326,37 @@ export const useGlobalStore = () => {
         store.hideDeleteSongModal()
     }
 
+    store.editSong = async function(){
+
+        let list = store.currentList
+
+        let title = document.getElementById("Title").value;
+        let artist = document.getElementById("Artist").value;
+        let youTubeId = document.getElementById("youTubeId").value;
+
+        let songid = store.markedsongforediting
+
+        list.songs[songid].title = title;
+        list.songs[songid].artist = artist;
+        list.songs[songid].youTubeId = youTubeId;
+
+        const response = await api.updatePlaylistById(list._id, list)
+
+        if (response.data.success) {
+
+            storeReducer({
+
+                type: GlobalStoreActionType.SET_CURRENT_LIST,
+                payload: list
+            })
+        }
+        else {
+            console.log("API FAILED TO EDIT SONG");
+        }
+
+        store.hideEditSongModal()
+    }
+
     store.showDeleteListModal = function(){
 
         let modal = document.getElementById("delete-list-modal")
@@ -323,6 +378,18 @@ export const useGlobalStore = () => {
     store.hideDeleteSongModal = function() {
 
         let modal = document.getElementById("delete-song-modal")
+        modal.classList.remove("is-visible")
+    }
+
+    store.showEditSongModal = function() {
+
+        let modal = document.getElementById("edit-song-modal")
+        modal.classList.add("is-visible")
+    }
+
+    store.hideEditSongModal = function() {
+
+        let modal = document.getElementById("edit-song-modal")
         modal.classList.remove("is-visible")
     }
 
