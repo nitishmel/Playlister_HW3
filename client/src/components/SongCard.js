@@ -6,6 +6,12 @@ function SongCard(props) {
 
     const { song, index } = props;
     let cardClass = "list-card unselected-list-card";
+
+    function handleRemoveSong(){
+
+        store.deleteMarkedSong(index);
+    }
+
     return (
         <div
             key={index}
@@ -24,6 +30,7 @@ function SongCard(props) {
                 id={"remove-song-" + index}
                 className="list-card-button"
                 value={"\u2715"}
+                onClick={handleRemoveSong}
             />
         </div>
     );
