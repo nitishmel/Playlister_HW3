@@ -98,10 +98,25 @@ deleteList = async (req, res) => {
     }).catch(err => console.log(err))
 }
 
+updatePlaylistById = async (req, res) => {
+
+    let playlist = new Playlist(req.body)
+    
+    await Playlist.updateOne({_id: req.params.id}, {$set: {name: playlist.name, songs: playlist.songs}}, (err, list) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
+        }
+
+        return res.status(200).json({ success: true, playlist: list })
+    }).catch(err => console.log(err))
+
+}
+
 module.exports = {
     createPlaylist,
     getPlaylists,
     getPlaylistPairs,
     getPlaylistById,
-    deleteList
+    deleteList,
+    updatePlaylistById
 }

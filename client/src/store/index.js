@@ -205,6 +205,34 @@ export const useGlobalStore = () => {
         asyncdeleteList();
     }
 
+    store.add = function(){
+
+        async function asyncadd(){
+
+        let list = store.currentList
+
+        let song = ({title: "Untitled", artist: "Unknown", youTubeId: "dQw4w9WgXcQ"});
+
+        list.songs.push(song);
+
+        const response = await api.updatePlaylistById(list._id, list)
+
+        if (response.data.success) {
+
+            storeReducer({
+
+                type: GlobalStoreActionType.SET_CURRENT_LIST,
+                payload: list
+            })
+        }
+        else {
+            console.log("API FAILED TO DELETE PLAYLIST");
+        }
+    }
+
+        asyncadd();
+    }
+
     store.deleteMarkedList = function(key) {
 
             storeReducer({
