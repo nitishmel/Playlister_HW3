@@ -1,6 +1,11 @@
 import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
+
+import MoveSong_Transaction from '../transactions/MoveSong_Transaction.js';
+import AddSong_Transaction from '../transactions/AddSong_Transaction.js';
+import EditSong_Transaction from '../transactions/EditSong_Transaction.js';
+import RemoveSong_Transaction from '../transactions/RemoveSong_Transaction.js';
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -8,6 +13,7 @@ export const GlobalStoreContext = createContext({});
     
     @author McKilla Gorilla
 */
+
 
 // THESE ARE ALL THE TYPES OF UPDATES TO OUR GLOBAL
 // DATA STORE STATE THAT CAN BE PROCESSED
@@ -267,6 +273,70 @@ export const useGlobalStore = () => {
         asyncadd();
     }
 
+    store.addatIndex = async function(addsongindex, title, artist, youTubeId) {
+
+        let song = ({title: title, artist: artist, youTubeId: youTubeId});
+
+        let list = store.currentList
+
+        list.songs.splice(addsongindex, 0, song);
+
+        const response = await api.updatePlaylistById(list._id, list)
+
+        if (response.data.success) {
+
+            storeReducer({
+
+                type: GlobalStoreActionType.SET_CURRENT_LIST,
+                payload: list
+            })
+        }
+        else {
+            console.log("API FAILED TO ADD SONG");
+        }
+    }
+
+    store.moveSong = async function(start, end) {
+
+        if (start !== end)
+        {
+            let list = store.currentList;
+
+            // WE NEED TO UPDATE THE STATE FOR THE APP
+            start -= 1;
+            end -= 1;
+            if (start < end) {
+                let temp = list.songs[start];
+                for (let i = start; i < end; i++) {
+                    list.songs[i] = list.songs[i + 1];
+                }
+                list.songs[end] = temp;
+            }
+            else if (start > end) {
+                let temp = list.songs[start];
+                for (let i = start; i > end; i--) {
+                    list.songs[i] = list.songs[i - 1];
+                }
+                list.songs[end] = temp;
+            }
+            
+        const response = await api.updatePlaylistById(list._id, list)
+
+        if (response.data.success) {
+
+            storeReducer({
+
+                type: GlobalStoreActionType.SET_CURRENT_LIST,
+                payload: list
+            })
+        }
+        else {
+            console.log("API FAILED TO MOVE SONG");
+        }
+
+        }
+    }
+
     store.deleteMarkedList = function(key) {
 
         storeReducer({
@@ -301,11 +371,9 @@ export const useGlobalStore = () => {
         store.showEditSongModal()
     }
 
-    store.delete = async function() {
+    store.delete = async function(index) {
 
         let list = store.currentList
-
-        let index = store.markedsongfordeletion
 
         store.currentList.songs.splice(index, 1);
 
@@ -326,15 +394,35 @@ export const useGlobalStore = () => {
         store.hideDeleteSongModal()
     }
 
-    store.editSong = async function(){
+    store.deleteCall = function(){
 
-        let list = store.currentList
+        let songid = store.markedsongfordeletion;
+        let title = store.currentList.songs[songid].title
+        let artist = store.currentList.songs[songid].artist;
+        let youTubeId = store.currentList.songs[songid].youTubeId;
+        store.addRemoveSongTransaction(songid, title, artist, youTubeId)
+    }
+
+    store.editCall = function(){
+
+        let songid = store.markedsongforediting;
+
+        let oldtitle = store.currentList.songs[songid].title;
+        let oldartist = store.currentList.songs[songid].artist;
+        let oldyouTubeId = store.currentList.songs[songid].youTubeId;
+
+        let song = ({title: oldtitle, artist: oldartist, youTubeId: oldyouTubeId});
 
         let title = document.getElementById("Title").value;
         let artist = document.getElementById("Artist").value;
         let youTubeId = document.getElementById("youTubeId").value;
 
-        let songid = store.markedsongforediting
+        store.addEditSongTransaction(songid, title, artist, youTubeId, song)
+
+    }
+    store.editSong = async function(songid, title, artist, youTubeId){
+
+        let list = store.currentList
 
         list.songs[songid].title = title;
         list.songs[songid].artist = artist;
@@ -431,11 +519,43 @@ export const useGlobalStore = () => {
     store.getPlaylistSize = function() {
         return store.currentList.songs.length;
     }
+
+    store.addAddSongTransaction = () => {
+        let transaction = new AddSong_Transaction(store);
+        tps.addTransaction(transaction);
+    }
+
+    store.addRemoveSongTransaction = (index, title, artist, youTubeId) => {
+        let transaction = new RemoveSong_Transaction(store, index, title, artist, youTubeId);
+        tps.addTransaction(transaction);  
+    }
+
+    store.addEditSongTransaction = (songindex, title, artist, youTubeId, song) => {
+        let transaction = new EditSong_Transaction(store, songindex, title, artist, youTubeId, song);
+        tps.addTransaction(transaction);
+    }
+
+    store.addMoveSongTransaction = (start, end) => {
+
+        if (start !== end)
+        {
+            let transaction = new MoveSong_Transaction(store, start, end);
+            tps.addTransaction(transaction);
+        }
+    }
     store.undo = function () {
-        tps.undoTransaction();
+
+        if (tps.hasTransactionToUndo()){
+
+            tps.undoTransaction();
+        }
     }
     store.redo = function () {
-        tps.doTransaction();
+
+        if (tps.hasTransactionToRedo()){
+
+            tps.doTransaction();
+        }
     }
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
