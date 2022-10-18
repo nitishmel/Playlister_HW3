@@ -15,7 +15,7 @@ function EditToolbar() {
 
     function handleAddSong(){
 
-        store.add();
+        store.addAddSongTransaction()
     }
 
     function handleUndo() {
