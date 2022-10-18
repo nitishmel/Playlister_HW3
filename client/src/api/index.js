@@ -19,8 +19,6 @@ const api = axios.create({
     baseURL: 'http://localhost:4000/api',
 })
 
-let list = {}
-
 
 // THESE ARE ALL THE REQUESTS WE'LL BE MAKING, ALL REQUESTS HAVE A
 // REQUEST METHOD (like get) AND PATH (like /playlist). SOME ALSO
@@ -29,17 +27,19 @@ let list = {}
 // WE NEED TO PUT THINGS INTO THE DATABASE OR IF WE HAVE SOME
 // CUSTOM FILTERS FOR QUERIES
 
-export const CreatePlaylist = (list) => api.post(`/playlist`, list)
+export const createPlaylist = (list) => api.post(`/playlist`, list)
 export const getAllPlaylists = () => api.get(`/playlists`)
 export const getPlaylistPairs = () => api.get('playlistpairs')
 export const getPlaylistById = (id) => api.get(`/playlist/${id}`)
+export const deleteList = (id) => api.delete(`/playlist/${id}`)
 
 const apis = {
 
-    CreatePlaylist,
+    createPlaylist,
     getAllPlaylists,
     getPlaylistPairs,
     getPlaylistById,
+    deleteList
 }
 
 export default apis
