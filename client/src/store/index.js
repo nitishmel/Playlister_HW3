@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react'
+import { createContext, useState, useCallback, useEffect, useLayoutEffect, useRef} from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
 
@@ -44,7 +44,8 @@ export const useGlobalStore = () => {
         markedkeyfordeletion: null,
         markedsongfordeletion: null,
         markedsongforediting: null,
-        ismodalopen : 0
+        ismodalopen : 0,
+        listnamechange: 0
     });
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
@@ -61,7 +62,8 @@ export const useGlobalStore = () => {
                     listNameActive: false,
                     markedkeyfordeletion: store.markedkeyfordeletion,
                     markedsongfordeletion: store.markedsongfordeletion,
-                    ismodalopen: 0
+                    ismodalopen: 0,
+                    listnamechange: 1
                 });
             }
             // STOP EDITING THE CURRENT LIST
@@ -73,7 +75,8 @@ export const useGlobalStore = () => {
                     listNameActive: false,
                     markedkeyfordeletion: store.markedkeyfordeletion,
                     markedsongfordeletion: store.markedsongfordeletion,
-                    ismodalopen: 0
+                    ismodalopen: 0,
+                    listnamechange: 0
                 })
             }
             // CREATE A NEW LIST
@@ -85,7 +88,8 @@ export const useGlobalStore = () => {
                     listNameActive: false,
                     markedkeyfordeletion: store.markedkeyfordeletion,
                     markedsongfordeletion: store.markedsongfordeletion,
-                    ismodalopen: 0
+                    ismodalopen: 0,
+                    listnamechange: 0
                 })
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -97,7 +101,8 @@ export const useGlobalStore = () => {
                     listNameActive: false,
                     markedkeyfordeletion: store.markedkeyfordeletion,
                     markedsongfordeletion: store.markedsongfordeletion,
-                    ismodalopen: 0
+                    ismodalopen: 0,
+                    listnamechange: 0
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -109,7 +114,8 @@ export const useGlobalStore = () => {
                     listNameActive: false,
                     markedkeyfordeletion: payload,
                     markedsongfordeletion: store.markedsongfordeletion,
-                    ismodalopen: 1
+                    ismodalopen: 1,
+                    listnamechange: 0
                 });
             }
 
@@ -121,7 +127,8 @@ export const useGlobalStore = () => {
                     listNameActive: false,
                     markedkeyfordeletion: store.markedkeyfordeletion,
                     markedsongfordeletion: payload,
-                    ismodalopen: 1
+                    ismodalopen: 1,
+                    listnamechange: 0
                 });
             }
             // UPDATE A LIST
@@ -133,7 +140,8 @@ export const useGlobalStore = () => {
                     listNameActive: false,
                     markedkeyfordeletion: store.markedkeyfordeletion,
                     markedsongfordeletion: store.markedsongfordeletion,
-                    ismodalopen: 0
+                    ismodalopen: 0,
+                    listnamechange: 0
                 });
             }
             // START EDITING A LIST NAME
@@ -145,7 +153,8 @@ export const useGlobalStore = () => {
                     listNameActive: true,
                     markedkeyfordeletion: store.markedkeyfordeletion,
                     markedsongfordeletion: store.markedsongfordeletion,
-                    ismodalopen: 0
+                    ismodalopen: 0,
+                    listnamechange: 0
                 });
             }
             case GlobalStoreActionType.MARK_SONG_FOR_EDITING: {
@@ -157,7 +166,8 @@ export const useGlobalStore = () => {
                     markedkeyfordeletion: store.markedkeyfordeletion,
                     markedsongfordeletion: store.markedsongfordeletion,
                     markedsongforediting: payload,
-                    ismodalopen: 1
+                    ismodalopen: 1,
+                    listnamechange: 0
                 });
             }
             default:
@@ -471,6 +481,12 @@ export const useGlobalStore = () => {
 
         let modal = document.getElementById("delete-list-modal")
         modal.classList.remove("is-visible")
+
+        storeReducer({
+
+            type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+            payload: store.idNamePairs
+        })
     }
     
     store.showDeleteSongModal = function() {

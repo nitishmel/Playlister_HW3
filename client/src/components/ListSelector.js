@@ -13,6 +13,10 @@ const ListSelector = () => {
 
     let canAddList = (store.currentList === null) && (!store.ismodalopen)
 
+    let addListClass = "playlister-button";
+
+    if (!canAddList) addListClass += "-disabled";
+
     useEffect(() => {
         store.loadIdNamePairs();
     }, []);
@@ -39,7 +43,7 @@ const ListSelector = () => {
                     type="button"
                     id="add-list-button"
                     onClick={handleCreateNewList}
-                    className="playlister-button"
+                    className={addListClass}
                     value="+" />
                 Your Lists
             </div>                {
