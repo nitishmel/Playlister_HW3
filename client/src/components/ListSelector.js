@@ -11,6 +11,8 @@ const ListSelector = () => {
     const { store } = useContext(GlobalStoreContext);
     store.history = useHistory();
 
+    let canAddList = (store.currentList === null) && (!store.ismodalopen)
+
     useEffect(() => {
         store.loadIdNamePairs();
     }, []);

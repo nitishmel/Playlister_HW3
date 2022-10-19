@@ -69,7 +69,6 @@ function SongCard(props) {
 
         targetId++
         
-
         console.log(sourceId)
 
         store.addMoveSongTransaction(sourceId, targetId)

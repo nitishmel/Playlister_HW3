@@ -43,7 +43,8 @@ export const useGlobalStore = () => {
         listNameActive: false,
         markedkeyfordeletion: null,
         markedsongfordeletion: null,
-        markedsongforediting: null
+        markedsongforediting: null,
+        ismodalopen : 0
     });
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
@@ -55,11 +56,12 @@ export const useGlobalStore = () => {
             case GlobalStoreActionType.CHANGE_LIST_NAME: {
                 return setStore({
                     idNamePairs: payload.idNamePairs,
-                    currentList: payload.playlist,
+                    currentList: null,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     markedkeyfordeletion: store.markedkeyfordeletion,
-                    markedsongfordeletion: store.markedsongfordeletion
+                    markedsongfordeletion: store.markedsongfordeletion,
+                    ismodalopen: 0
                 });
             }
             // STOP EDITING THE CURRENT LIST
@@ -70,7 +72,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     markedkeyfordeletion: store.markedkeyfordeletion,
-                    markedsongfordeletion: store.markedsongfordeletion
+                    markedsongfordeletion: store.markedsongfordeletion,
+                    ismodalopen: 0
                 })
             }
             // CREATE A NEW LIST
@@ -81,7 +84,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter + 1,
                     listNameActive: false,
                     markedkeyfordeletion: store.markedkeyfordeletion,
-                    markedsongfordeletion: store.markedsongfordeletion
+                    markedsongfordeletion: store.markedsongfordeletion,
+                    ismodalopen: 0
                 })
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -92,7 +96,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     markedkeyfordeletion: store.markedkeyfordeletion,
-                    markedsongfordeletion: store.markedsongfordeletion
+                    markedsongfordeletion: store.markedsongfordeletion,
+                    ismodalopen: 0
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -103,7 +108,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     markedkeyfordeletion: payload,
-                    markedsongfordeletion: store.markedsongfordeletion
+                    markedsongfordeletion: store.markedsongfordeletion,
+                    ismodalopen: 1
                 });
             }
 
@@ -114,7 +120,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     markedkeyfordeletion: store.markedkeyfordeletion,
-                    markedsongfordeletion: payload
+                    markedsongfordeletion: payload,
+                    ismodalopen: 1
                 });
             }
             // UPDATE A LIST
@@ -125,7 +132,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     markedkeyfordeletion: store.markedkeyfordeletion,
-                    markedsongfordeletion: store.markedsongfordeletion
+                    markedsongfordeletion: store.markedsongfordeletion,
+                    ismodalopen: 0
                 });
             }
             // START EDITING A LIST NAME
@@ -136,7 +144,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: true,
                     markedkeyfordeletion: store.markedkeyfordeletion,
-                    markedsongfordeletion: store.markedsongfordeletion
+                    markedsongfordeletion: store.markedsongfordeletion,
+                    ismodalopen: 0
                 });
             }
             case GlobalStoreActionType.MARK_SONG_FOR_EDITING: {
@@ -147,7 +156,8 @@ export const useGlobalStore = () => {
                     listNameActive: true,
                     markedkeyfordeletion: store.markedkeyfordeletion,
                     markedsongfordeletion: store.markedsongfordeletion,
-                    markedsongforediting: payload
+                    markedsongforediting: payload,
+                    ismodalopen: 1
                 });
             }
             default:
@@ -193,6 +203,9 @@ export const useGlobalStore = () => {
 
     // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
     store.closeCurrentList = function () {
+
+        tps.clearAllTransactions()
+
         storeReducer({
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}
@@ -234,7 +247,10 @@ export const useGlobalStore = () => {
 
             if (response.data.success) {
 
-                store.loadIdNamePairs()
+                if (store.idNamePairs != []){
+
+                    store.loadIdNamePairs()
+                }
             }
             else {
                 console.log("API FAILED TO DELETE PLAYLIST");
@@ -465,6 +481,11 @@ export const useGlobalStore = () => {
 
     store.hideDeleteSongModal = function() {
 
+        storeReducer({
+
+            type: GlobalStoreActionType.SET_CURRENT_LIST,
+            payload: store.currentList
+        })
         let modal = document.getElementById("delete-song-modal")
         modal.classList.remove("is-visible")
     }
@@ -556,6 +577,17 @@ export const useGlobalStore = () => {
 
             tps.doTransaction();
         }
+    }
+
+
+    store.hasTransactionToUndo = function() {
+
+        return tps.hasTransactionToUndo()
+    }
+
+    store.hasTransactionToRedo = function(){
+
+        return tps.hasTransactionToRedo()
     }
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME

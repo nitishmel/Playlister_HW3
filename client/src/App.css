@@ -23,6 +23,7 @@ body {
 #root {
   background-color: var(--swatch-primary);
   font-family: "Lexend Exa";
+  font-size: 20pt;
   position: absolute;
   width: 80%;
   left: 10%;
@@ -55,18 +56,24 @@ body {
   border-radius: 10px;
 }
 
+
 #edit-toolbar {
   grid-column: 2 / 3;
-  grid-row: 1 / 2;
-  background-color: transparent;
-  float:right;
+  grid-row: 2 / 3;
+  display: flex;
+  flex-direction: row;
+  overflow: auto;
+  background-color: var(--swatch-primary);
+  float: right;
 }
 
 #playlist-selector, #playlist-cards {
   overflow: scroll;
   grid-column: 1 / 3;
+  height: 80%;
   grid-row: 2 / 3;
-  display:grid;
+  display:flex;
+  flex-direction: column;
   background-color: var(--swatch-primary);
 }
 
@@ -81,6 +88,7 @@ body {
   opacity: 100%;
   */
   
+  
   font-size:36pt;
   border-width: 1px;
   border-color: black;
@@ -89,6 +97,8 @@ body {
   float:left;
   color: black;
   cursor: pointer;
+  background-image: linear-gradient(to bottom,         
+  #b8b808, #636723);
   opacity: 100%;
 }
 
@@ -100,6 +110,7 @@ body {
 .playlister-button-disabled {
   opacity: 0.25; 
   cursor: not-allowed;
+  color: black
 }
 
 #playlister-statusbar {
@@ -117,7 +128,8 @@ body {
 
 #add-list-button {
 
-  
+  font-size: 24px;
+  padding: 5px;
   float:left;
 }
 
@@ -159,9 +171,6 @@ input {
   font-size:20pt;
 }
 
-.disabled {
-  background-color: lightgray;
-}
 
 .disabled:hover {
   color: var(--swatch-neutral);
@@ -193,20 +202,127 @@ input {
   opacity: 1;
 }
 
+.modal-root {
+
+  position: relative;
+  max-width: 300vw;
+  max-height: 100vh;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  background: var(--swatch-complement);
+  cursor: default;
+  border-width: 2px;
+  border-color: black;
+  border-style: solid;
+  box-shadow: 5px 10px #888888;
+}
+
 .modal-dialog {
   position: relative;
-  max-width: 800px;
-  max-height: 80vh;
+  max-width: 100px;
+  max-height: 100vh;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
   background: var(--swatch-complement);
-  overflow: auto;
   cursor: default;
-  border-width: 5px;
-  border-radius: 10px;
-  border-style: groove;
+  border-width: 2px;
+  border-color: black;
+  border-style: solid;
+  box-shadow: 5px 10px #888888;
 }
 
 .modal-dialog > * {
   padding: 1rem;
+}
+
+.modal-north {
+  font-size:32pt;
+  font-weight: bold;
+  background-color: #669966;
+  color:white;
+}
+
+.modal-center {
+  display: grid;
+  grid-template-columns: 30% 65%;
+  grid-template-rows: 33% 33% 33%;
+  gap: 10px 20px;
+  font-size: 24pt;
+}
+
+span {
+  font-weight: bold;
+  font-style: italic;
+}
+
+.modal-south {
+  display:flex;
+  flex-direction: row;
+  background-color: lightgray;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-center-content {
+  grid-column: 1 / 3;
+  grid-row: 1 / 4;
+}
+
+.modal-prompt {  
+  font-size:28pt;
+  font-weight: bold;
+}
+
+.modal-textfield {
+  font-size:28pt;
+}
+
+.modal-button {
+  font-size: 20pt;
+}
+
+#title-prompt {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+}
+
+#edit-song-modal-title-textfield {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+}
+
+#artist-prompt {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+
+#edit-song-modal-artist-textfield {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+}
+
+#you-tube-id-prompt {
+  grid-column: 1 / 2;
+  grid-row: 3 / 4;
+}
+
+#edit-song-modal-youTubeId-textfield {
+  grid-column: 2 / 3;
+  grid-row: 3 / 4;
+}
+
+.confirm-cancel-box {
+  grid-column: 1 / 3;
+  grid-row: 3 / 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-button {
+  margin:5px;
 }
 
 .modal-header,
